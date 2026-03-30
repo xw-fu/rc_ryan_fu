@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../app';
 
-describe('POST /notify', () => {
+describe('API Notification System', () => {
   it('should return 202 Accepted when a valid notification is submitted', async () => {
     const response = await request(app)
       .post('/notify')
@@ -23,5 +23,24 @@ describe('POST /notify', () => {
       });
 
     expect(response.status).toBe(400);
+  });
+
+  it('should return 404 for unknown status id', async () => {
+    const response = await request(app).get('/status/unknown-id');
+    expect(response.status).toBe(404);
+  });
+
+  it('should track status after submission', async () => {
+    const postResponse = await request(app)
+      .post('/notify')
+      .send({
+        provider: 'https://webhook.site/test',
+        body: { message: 'Track Status' },
+      });
+
+    const id = postResponse.body.id;
+    const statusResponse = await request(app).get(`/status/${id}`);
+    expect(statusResponse.status).toBe(200);
+    expect(statusResponse.body.status).toBeDefined();
   });
 });

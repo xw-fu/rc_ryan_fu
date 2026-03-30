@@ -41,6 +41,15 @@ app.post('/notify', (req: Request, res: Response) => {
   res.status(202).json({ id });
 });
 
+app.get('/status/:id', (req: Request, res: Response) => {
+    const { id } = req.params;
+    const notification = notifications.get(id as string);
+    if (!notification) {
+        return res.status(404).json({ error: 'Not found' });
+    }
+    res.json(notification);
+});
+
 async function dispatch(notification: Notification) {
   notification.attempts++;
   try {
@@ -50,7 +59,7 @@ async function dispatch(notification: Notification) {
     notification.status = 'delivered';
   } catch (error) {
     notification.status = 'failed';
-    // Retry logic would go here
+    // Retry logic: Exponential backoff or simple retry
     if (notification.attempts < 3) {
         setTimeout(() => dispatch(notification), 1000 * notification.attempts);
     }
