@@ -1,0 +1,58 @@
+=== FINAL TEST REPORT ===
+Date: 2026-03-30T06:48:51.595Z
+
+PASS src/delivery/retry.test.ts
+  ✓ Retry Logic > DEFAULT_RETRY_CONFIG > should have sensible defaults (9ms)
+  ✓ Retry Logic > calculateBackoff > should return baseDelay for attempt 0 (0ms)
+  ✓ Retry Logic > calculateBackoff > should double delay for each attempt (exponential) (0ms)
+  ✓ Retry Logic > calculateBackoff > should cap delay at maxDelayMs (1ms)
+  ✓ Retry Logic > calculateBackoff > should use custom config (3ms)
+  ✓ Retry Logic > shouldRetry > should return true when attempt < maxRetries (1ms)
+  ✓ Retry Logic > shouldRetry > should return false when attempt >= maxRetries (0ms)
+
+PASS src/queue/notification-queue.test.ts
+  ✓ NotificationQueue > enqueue > should add a notification to the queue (7ms)
+  ✓ NotificationQueue > enqueue > should store the notification retrievable by id (1ms)
+  ✓ NotificationQueue > dequeue > should return undefined when queue is empty (1ms)
+  ✓ NotificationQueue > dequeue > should return notifications in FIFO order (1ms)
+  ✓ NotificationQueue > dequeue > should decrease size after dequeue (0ms)
+  ✓ NotificationQueue > requeue (at-least-once) > should re-add a notification for retry (1ms)
+  ✓ NotificationQueue > requeue (at-least-once) > should update the stored notification on requeue (1ms)
+  ✓ NotificationQueue > updateStatus > should update the status of a notification (0ms)
+  ✓ NotificationQueue > updateStatus > should return false for non-existent notification (0ms)
+
+PASS src/models/notification.test.ts
+  ✓ Notification Model > createNotification > should create a notification with a unique id (10ms)
+  ✓ Notification Model > createNotification > should set initial status to PENDING (0ms)
+  ✓ Notification Model > createNotification > should store the type, targetUrl, and body (2ms)
+  ✓ Notification Model > createNotification > should set attempt to 0 (0ms)
+  ✓ Notification Model > createNotification > should set createdAt to a valid date (0ms)
+  ✓ Notification Model > createNotification > should generate unique ids for different notifications (1ms)
+  ✓ Notification Model > validation > should require type (16ms)
+  ✓ Notification Model > validation > should require targetUrl (2ms)
+  ✓ Notification Model > validation > should require a valid URL for targetUrl (1ms)
+  ✓ Notification Model > validation > should require body (1ms)
+
+PASS src/delivery/worker.test.ts
+  ✓ DeliveryWorker > should deliver a notification to the target URL (73ms)
+  ✓ DeliveryWorker > should set Content-Type to application/json (8ms)
+  ✓ DeliveryWorker > should retry on failure and mark as RETRYING (8ms)
+  ✓ DeliveryWorker > should mark as FAILED after max retries exceeded (10ms)
+  ✓ DeliveryWorker > should do nothing when queue is empty (1ms)
+  ✓ DeliveryWorker > should increment attempt counter on each retry (10ms)
+
+PASS src/app.test.ts
+  ✓ API Endpoints > POST /notify > should accept a valid notification and return 201 (44ms)
+  ✓ API Endpoints > POST /notify > should return 400 when type is missing (5ms)
+  ✓ API Endpoints > POST /notify > should return 400 when targetUrl is missing (4ms)
+  ✓ API Endpoints > POST /notify > should return 400 when targetUrl is invalid (3ms)
+  ✓ API Endpoints > POST /notify > should return 400 when body is missing (3ms)
+  ✓ API Endpoints > GET /status/:id > should return the status of an existing notification (6ms)
+  ✓ API Endpoints > GET /status/:id > should return 404 for non-existent notification (3ms)
+  ✓ API Endpoints > GET /health > should return 200 with status ok (3ms)
+
+Test Suites: 5 passed, 5 total
+Tests:       40 passed, 40 total
+Time:        24.339s
+
+All tests passed successfully.
